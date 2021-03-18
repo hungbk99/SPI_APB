@@ -1,0 +1,26 @@
+D:/github/SPI_APB/tb/spi_tb.sv {1 {vlog -work work -vopt -sv D:/github/SPI_APB/tb/spi_tb.sv
+QuestaSim-64 vlog 10.2c Compiler 2013.07 Jul 19 2013
+
+} {} {}} D:/github/SPI_APB/rtl/spi_top.sv {1 {vlog -work work -vopt -sv D:/github/SPI_APB/rtl/spi_top.sv
+QuestaSim-64 vlog 10.2c Compiler 2013.07 Jul 19 2013
+-- Compiling package spi_top_sv_unit
+-- Importing package spi_package
+-- Compiling module spi_top
+-- Compiling module spi_sync_fifo
+-- Compiling module spi_apb_slave
+-- Compiling module spi_control
+-- Compiling module spi_data
+-- Compiling module spi_clock
+-- Compiling module spi_shift
+
+Top level modules:
+	spi_top
+
+} {} {}} D:/github/SPI_APB/rtl/spi_package.sv {1 {vlog -work work -vopt -sv D:/github/SPI_APB/rtl/spi_package.sv
+QuestaSim-64 vlog 10.2c Compiler 2013.07 Jul 19 2013
+-- Compiling package spi_package
+
+Top level modules:
+	--none--
+
+} {} {}}

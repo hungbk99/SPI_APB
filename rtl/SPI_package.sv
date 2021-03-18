@@ -1,11 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////
-// File Name: 		SPI_package.sv
+// File Name: 		spi_package.sv
 // Project Name:	VG SoC
 // Author:	 	  	hungbk99
 // Page:     		  VLSI Technology
 //////////////////////////////////////////////////////////////////////////////////
 
-package	SPI_package;
+package	spi_package;
 	parameter	SPI_DATA_WIDTH = 32;
   parameter	SPI_POINTER_WIDTH = 6;
   parameter	SPI_FIFO_DEPTH = 2**SPI_POINTER_WIDTH;

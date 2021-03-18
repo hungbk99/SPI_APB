@@ -1,0 +1,323 @@
+m255
+K4
+z2
+13
+cModel Technology
+dD:/Project/AMBA_BUS/simulation/simulation/sim
+!s112 0.1
+!i10d 8192
+!i10e 25
+!i10f 100
+T_opt
+!s110 1615385775
+VnA@<@TX`]zkjC]<5ViGd90
+04 7 4 work spi_top fast 0
+=1-d481d7fba94b-6048d4ae-c0-23c0
+o-quiet -auto_acc_if_foreign -work work
+n@_opt
+OL;O;10.2c;57
+vspi_apb_slave
+Z0 DXx6 sv_std 3 std 0 22 `a<MJET1=lN@jzbA7kHm;1
+Z1 DXx4 work 11 spi_package 0 22 NEKj3JYSI^QDiZR:gGIR>0
+Z2 DXx4 work 15 spi_top_sv_unit 0 22 X:bSD]V>H`O7ENS<L]]ME0
+Z3 V`JN@9S9cnhjKRR_L]QIcM3
+r1
+31
+!s100 ^Pj;iRHQIdY2]BbL[F^RN0
+IdQ0J115_9nE@AnFT6jXGm0
+Z4 !s105 spi_top_sv_unit
+S1
+Z5 dD:/github/SPI_APB/sim
+Z6 w1615385763
+Z7 8D:/github/SPI_APB/rtl/spi_top.sv
+Z8 FD:/github/SPI_APB/rtl/spi_top.sv
+L0 211
+Z9 OL;L;10.2c;57
+Z10 !s108 1615385766.629000
+Z11 !s107 D:/github/SPI_APB/rtl/spi_top.sv|
+Z12 !s90 -reportprogress|300|-work|work|-vopt|-sv|D:/github/SPI_APB/rtl/spi_top.sv|
+Z13 o-work work -sv -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
+!s85 0
+!i10b 1
+!i111 0
+vspi_clock
+Z14 DXx6 sv_std 3 std 0 22 `a<MJET1=lN@jzbA7kHm;1
+R1
+R2
+R3
+r1
+31
+!s100 KSRD2ON6g5=2M:o=9R:j92
+IJfW0CYC_fz`61WCWzl^C]1
+R4
+S1
+R5
+R6
+R7
+R8
+L0 711
+R9
+R10
+R11
+R12
+R13
+!s85 0
+!i10b 1
+!i111 0
+vspi_control
+R14
+R1
+R2
+R3
+r1
+31
+!s100 B1gCVe:Z<<`O09F;ZiPP=3
+IjOQDk5iVPXRcbG=l2QBQ:3
+R4
+S1
+R5
+R6
+R7
+R8
+L0 326
+R9
+R10
+R11
+R12
+R13
+!s85 0
+!i10b 1
+!i111 0
+vspi_data
+R14
+R1
+R2
+R3
+r1
+31
+!s100 oLG8iYWlI`DKZTd3_LPTN0
+I2gFgRJdhziU2eok:ZB2]12
+R4
+S1
+R5
+R6
+R7
+R8
+L0 605
+R9
+R10
+R11
+R12
+R13
+!s85 0
+!i10b 1
+!i111 0
+XSPI_package
+R14
+I]QQi;@^]^C[19DW]1fLXC3
+V]QQi;@^]^C[19DW]1fLXC3
+S1
+R5
+Z15 w1603371847
+8D:/github/SPI_APB/rtl/SPI_package.sv
+FD:/github/SPI_APB/rtl/SPI_package.sv
+L0 8
+R9
+r1
+31
+R13
+n@s@p@i_package
+!s110 1615381632
+!s100 BjOC[6XH^kBGdg?kQ7jFM3
+!s108 1615381632.894000
+!s107 D:/github/SPI_APB/rtl/SPI_package.sv|
+!s90 -reportprogress|300|-work|work|-vopt|-sv|D:/github/SPI_APB/rtl/SPI_package.sv|
+!i10b 1
+!s85 0
+!i111 0
+Xspi_package
+R14
+!s100 i?NI`5K`k[6W_eWURB2WD2
+INEKj3JYSI^QDiZR:gGIR>0
+VNEKj3JYSI^QDiZR:gGIR>0
+S1
+R5
+w1615383296
+8D:/github/SPI_APB/rtl/spi_package.sv
+FD:/github/SPI_APB/rtl/spi_package.sv
+L0 8
+R9
+r1
+31
+!s90 -reportprogress|300|-work|work|-vopt|-sv|D:/github/SPI_APB/rtl/spi_package.sv|
+R13
+!s110 1615385767
+!i10b 1
+!s85 0
+!s108 1615385766.981000
+!s107 D:/github/SPI_APB/rtl/spi_package.sv|
+!i111 0
+vspi_shift
+R14
+R1
+R2
+R3
+r1
+31
+!s100 ^leam2f]84OeJTi_`nQbT3
+Iz;lJ>f;eHT=5dPV>;GTV`0
+R4
+S1
+R5
+R6
+R7
+R8
+L0 894
+R9
+R10
+R11
+R12
+R13
+!s85 0
+!i10b 1
+!i111 0
+vSPI_Shift
+R14
+IUF6ONb2n5YONd?TYa?OJI1
+R3
+S1
+R5
+R15
+Z16 8D:/github/SPI_APB/rtl/SPI_Shift.sv
+Z17 FD:/github/SPI_APB/rtl/SPI_Shift.sv
+L0 9
+R9
+Z18 !s108 1615381633.081000
+Z19 !s107 D:/github/SPI_APB/rtl/SPI_Shift.sv|
+Z20 !s90 -reportprogress|300|-work|work|-vopt|-sv|D:/github/SPI_APB/rtl/SPI_Shift.sv|
+R13
+n@s@p@i_@shift
+!s100 1T=YF^6XDBEaUOHB0l:?F1
+!s105 SPI_Shift_sv_unit
+!i10b 1
+!i111 0
+XSPI_Shift_sv_unit
+R14
+Z21 DXx4 work 11 SPI_package 0 22 ]QQi;@^]^C[19DW]1fLXC3
+VRG]D_I3aGNl`YY8Q8k;0k0
+r1
+31
+IRG]D_I3aGNl`YY8Q8k;0k0
+S1
+R5
+R15
+R16
+R17
+L0 8
+R9
+R18
+R19
+R20
+R13
+n@s@p@i_@shift_sv_unit
+!s100 2eUoYNbiJcZT[BIg<d0PR2
+!s85 0
+!i10b 1
+!i103 1
+!i111 0
+vspi_sync_fifo
+R14
+R1
+R2
+R3
+r1
+31
+!s100 E>4Yel;KaYUe>obi6boea0
+IPO;nDXmblf1DP?[dl^HhA0
+R4
+S1
+R5
+R6
+R7
+R8
+L0 128
+R9
+R10
+R11
+R12
+R13
+!s85 0
+!i10b 1
+!i111 0
+vSPI_sync_fifo
+R14
+R21
+ICQ7V=lEbO=Iedz7a9L6nO0
+R3
+S1
+R5
+R15
+8D:/github/SPI_APB/rtl/SPI_sync_fifo.sv
+FD:/github/SPI_APB/rtl/SPI_sync_fifo.sv
+L0 9
+R9
+r1
+31
+R13
+n@s@p@i_sync_fifo
+!s110 1615381633
+!s100 SPPBG::PaR3J470nC<kPH0
+!s105 SPI_sync_fifo_sv_unit
+!s108 1615381633.219000
+!s107 D:/github/SPI_APB/rtl/SPI_sync_fifo.sv|
+!s90 -reportprogress|300|-work|work|-vopt|-sv|D:/github/SPI_APB/rtl/SPI_sync_fifo.sv|
+!i10b 1
+!s85 0
+!i111 0
+vspi_top
+R14
+R1
+R2
+R3
+r1
+31
+IFSmQ0Hom4UNn2`1g7?]MP3
+R4
+S1
+R5
+R6
+R7
+R8
+L0 10
+R9
+R10
+R11
+R12
+R13
+!s100 [>BPcF`l8L[h[Ug<JiUY10
+!s85 0
+!i10b 1
+!i111 0
+Xspi_top_sv_unit
+R14
+R1
+VX:bSD]V>H`O7ENS<L]]ME0
+r1
+31
+IX:bSD]V>H`O7ENS<L]]ME0
+S1
+R5
+R6
+R7
+R8
+L0 9
+R9
+R10
+R11
+R12
+R13
+!s100 e1b467i`e`M4D^^kzA3do1
+!s85 0
+!i10b 1
+!i103 1
+!i111 0
