@@ -10,7 +10,7 @@
 class apb_master_driver extends uvm_driver #(apb_transaction);
     //Virtual interface
     virtual apb_if    vif;
-    //Pointer to configuration unit of the agent
+    //Pointer to configuration class
     apb_config        cfg;        
 
     //UVM Utilities & automation macros => provide virtual methods: get_type_name, create
