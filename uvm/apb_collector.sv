@@ -4,7 +4,7 @@
 // Ho Chi Minh University of Technology
 // Email: 			quanghungbk1999@gmail.com  
 // Version  Date        Author    Description
-// v0.0     18.03.2021  hungbk99  First Creation  
+// v0.0     22.03.2021  hungbk99  First Creation  
 //=================================================================
 
 class apb_collector extends uvm_component;
@@ -14,7 +14,7 @@ class apb_collector extends uvm_component;
   apb_config      cfg;
 
   //Property: Indicate number of transactions
-  int num_transactions = 0;
+  protected int unsigned num_transactions = 0;
 
   //Property: Control -> checker & coverage
   bit check_enable = 1;
@@ -57,6 +57,7 @@ class apb_collector extends uvm_component;
   extern virtual function void report_phase(uvm_phase phase);
 endclass: apb_collector
 
+//FUNCTION: build_phase()
 function void apb_collector::build_phase(uvm_phase phase);
   super.build_phase(uvm_phase);
   if(cfg == null) begin
@@ -64,3 +65,65 @@ function void apb_collector::build_phase(uvm_phase phase);
       `uvm_error("[NOCONFIG]", "apb_config not set for: ", get_full_name())
   end
 endfunction: build_phase
+
+//FUNCTION: connect_phase()
+function void apb_collector::connect_phase(uvm_phase phase);
+  super.connect_phase(phase);
+  if(vif == null) begin
+    if(!uvm_config_db#(apb_config)::get(this, "", "vif", vif))
+      `uvm_error("[NOVIF]", "virtual interface must be set for: ", get_full_name(), ".vif")
+  end
+endfunction: connect_phase
+
+//TASK: run_phase()
+task apb_collector::run_phase(uvm_phase phase);
+  @(posedge vif.preset_n)
+  `uvm_info("[APB_COLLECTOR]", "Detect reset dropped", UVM_LOW)
+  collect_transaction();
+endtask: run_phase
+
+//TASK: collect_transaction()
+task apb_collector::collect_transaction();
+  forever begin
+    @(posedge vif.pclk iff (vif.preset_n));
+    begin_tr(trans_collected, "[apb_collector]", "UVM DEBUG", "transaction inside collect_transaction task");
+    trans_collected.paddr = vif.paddr;
+    trans_collected.master = cfg.master_config.name;
+    trans_collected.slave = cfg.get_slave_name(trans_collected.paddr);
+    trans_collected.pwrite = vif.pwrite;
+    trans_collected.pprot = vif.pprot;
+    trans_collected.pstrb = vif.pstrb;
+    
+    @(posedge vif.pclk)
+    if(trans_collected.pwrite == APB_READ)
+      trans_collected.pdata = vif.prdata
+    else if(trans_collected.pwrite == APB_WRITE)
+      trans_collected.pdata = vif.pwdata;
+    -> addr_trans_event;
+    
+    @(posedge vif.pclk)
+    if(trans_collected.pwrite == APB_READ) begin
+      while(vif.pready == 0) 
+        @(posedge vif.pclk);
+      trans_collected.pdata = vif.prdata
+    end
+
+    end_tr(trans_collected);
+    item_collected_port.write(trans_collected);
+    `uvm_info("[COLLECTOR]", $sformatf("Transfer collected: \n%s",
+                              trans_collected.sprint()), UVM_MEDIUM);
+    num_transactions++;
+  end
+endtask: collect_transaction
+
+//TASK: peek() - collector::monitor
+task apb_collector::peek(output apb_transaction trans);
+  @addr_trans_event;
+  trans = trans_collected;
+endtask: peek
+
+function apb_collector: report_phase(uvm_phase phase);
+  super.report_phase(phase);
+  `uvm_info("[REPORT_APB_COLLECTOR]", $sformatf("apb_collector collects %0d transactions", num_transactions), UVM_LOW)
+endfunction: report_phase
+

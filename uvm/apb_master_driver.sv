@@ -55,19 +55,19 @@ virtual task apb_master_driver::run_phase(uvm_phase phase);
 endtask
 
 virtual protected task apb_master_driver::get_and_drive();
-    @(negedge vif.preset)
+    @(negedge vif.preset_n)
     `uvm_info("[APB_MASTER_DRIVER]", "get_and_drive: Reset dropped", UVM_MEDIUM) 
     forever begin
         fork
             begin
-                @(negedge vif.preset)
+                @(negedge vif.preset_n)
                 //`uvm_info("[APB_MASTER_DRIVER]", "get_and_drive: Reset dropped", UVM_MEDIUM) 
                 reset();
             end
 
             begin
                 forever begin
-                    @(posedge vif.pclk iff (vif.preset))
+                    @(posedge vif.pclk iff (vif.preset_n))
                     seq_item_port.get_next_item(req);
                     driver_transfer(req);
                     seq_item_port.item_done();
@@ -81,7 +81,7 @@ virtual protected task apb_master_driver::get_and_drive();
 endtask: get_and_drive
 
 virtual protected task apb_master_driver::reset();
-    wait(!vif.preset)
+    wait(!vif.preset_n)
     `uvm_info("[APB_MASTER_DRIVER]", "[Reset....]", UVM_MEDIUM)
     vif.paddr     <= '0;
     vif.pwdata    <= '0; 
