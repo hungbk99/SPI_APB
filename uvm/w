@@ -1,5 +1,5 @@
 /*******************************************************************************
-  FILE : apb_if.sv
+  FILE : apb_master_seq_lib.sv
 *******************************************************************************/
 //   Copyright 1999-2010 Cadence Design Systems, Inc.
 //   All Rights Reserved Worldwide
@@ -20,38 +20,45 @@
 //----------------------------------------------------------------------
 
 /*******************************************************************************
-  FILE : apb_if.sv
+  FILE : apb_master_sequence_lib.sv
 *******************************************************************************/
 //   Modifications copyright (C) 2021 Le Quang Hung
 //   All Rights Reserved
 //   Ho Chi Minh University of Technology
 //   Email: quanghungbk1999@gmail.com
 //   Version  Date        Author    Description
-//   v0.0     18.03.2021  hungbk99  First Creation  
+//   v0.0     23.03.2021  hungbk99  First Creation  
 //----------------------------------------------------------------------
 
-interface apb_if(input pclk, input preset_n);
-  parameter ADDR_WIDTH = 32;
-  parameter DATA_WIDTH = 32;
-  parameter SLAVE_NUM = 8;
+class apb_slave_base_seq extends uvm_sequence #(apb_transaction); 
+  `uvm_object_utils(apb_slave_base_seq)
 
-  //APB signals
-  logic [ADDR_WIDTH-1:0]  paddr;
-  logic [DATA_WIDTH-1:0]  pwdata,
-                          prdata;
-  
-  logic                   pwrite,
-                          penable,
-                          pslverr,
-                          pready;
-  
-  logic [3:0]             pstrb;
-  logic [2:0]             pprot;
-  logic [SLAVE_NUM-1:0]   psel;
+  function new(string name = "apb_slave_base_seq");
+    super.new(name);
+  endfunction: new
 
-  //Control fields
-  bit                     check_enable = 1;
-  bit                     coverage_enable = 1;
-  //Assertion checks
-  `include "./apb_assertion.sv"
-endinterface: apb_if
+  virtual task pre_body();
+    if(starting_phase != null)
+      starting_phase.raise_objection(this, {"Running sequence ... [", get_full_name(), "]"});
+  endtask: pre_body
+
+  virtual task post_body();
+    if(starting_phase != null)
+      starting_phase.drop_objection(this, {"Completed sequence ... [", get_full_name(), "]"});
+  endtask: post_body
+endclass: apb_slave_base_seq
+
+class simple_response_seq extends apb_slave_base_seq;
+  `uvm_object_utils(simple_response_seq)
+
+  function new(string name = "simple_response_seq");
+    super.new(name);
+  endfunction: new
+
+  apb_transaction util_transaction;
+
+  virtual task body();
+
+  endtask: body
+
+

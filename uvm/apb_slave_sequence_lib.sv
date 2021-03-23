@@ -31,12 +31,12 @@
 //----------------------------------------------------------------------
 
 //=============================================================================
-// base sequence for apb master agent
+// Base Response Sequence
 //=============================================================================
-class apb_master_base_seq extends uvm_sequence #(apb_transaction);
-  `uvm_object_utils(apb_master_base_seq)    
+class apb_slave_base_seq extends uvm_sequence #(apb_transaction); 
+  `uvm_object_utils(apb_slave_base_seq)
 
-  function new(string name = "apb_master_base_seq");
+  function new(string name = "apb_slave_base_seq");
     super.new(name);
   endfunction: new
 
@@ -49,85 +49,78 @@ class apb_master_base_seq extends uvm_sequence #(apb_transaction);
     if(starting_phase != null)
       starting_phase.drop_objection(this, {"Completed sequence ... [", get_full_name(), "]"});
   endtask: post_body
-endclass: apb_master_base_seq
+endclass: apb_slave_base_seq
 
 //=============================================================================
-// Single Write
+// Simple Response Sequence
 //=============================================================================
-class write_seq extends apb_master_base_seq;
-  
-  `uvm_object_utils(write_seq)    
+class simple_response_seq extends apb_slave_base_seq;
+  `uvm_object_utils(simple_response_seq)
 
-  function new(string name = "write_seq");
+  function new(string name = "simple_response_seq");
     super.new(name);
   endfunction: new
 
+  apb_transaction util_transaction;
+
   virtual task body();
     `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
-    `uvm_do_with(req, {req.pwrite = APB_WRITE})
+    forever begin
+      m_sequencer.addr_trans_port.peek(util_transaction);
+      if((util_transaction.pwrite == APB_READ) &&
+        (m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) begin
+        `uvm_info(get_type_name(), $sformatf("Address: %h range matching read", util_transaction.paddr), UVM_MEDIUM)
+        `uvm_do_with(req, {req.pwrite == APB_READ;})
+      end
+    end
     `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
   endtask: body
-endclass: write_seq
+endclass: simple_response_seq
 
 //=============================================================================
-// Single Read
+// Memory Response Sequence
 //=============================================================================
-class read_seq extends apb_master_base_seq;
-  `uvm_object_utils(read_seq)
+class mem_response_seq extends apb_slave_base_seq;
+  `uvm_object_utils(mem_response_seq)
+
+  function new(string name = "mem_response_seq");
+    super.new(name);
+  endfunction: new
+
+  apb_transaction util_transaction;
  
-  function new(string name = "read_seq");
-    super.new(name);
-  endfunction: new
-
+  rand logic [31:0] mem_data;  
+  //Mem Value
+  logic bit [31:0] slave_mem [int]
   virtual task body();
     `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
-    `uvm_do_with(req, {req.pwrite = APB_READ})
+    forever begin
+      m_sequencer.addr_trans_port.peek(util_transaction);
+      if((util_transaction.pwrite == APB_READ) &&
+        (m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) begin
+        `uvm_info(get_type_name(), $sformatf("Address: %h range matching read", util_transaction.paddr), UVM_MEDIUM)
+        if(slave_mem.exits(util_transaction.paddr)
+          `uvm_do_with(req, {req.pwrite == APB_READ;
+                             req.addr == util_transaction.paddr;
+                             req.pdata == slave_mem[util_transaction.paddr];})
+        else begin                   
+          `uvm_do_with(req, {req.pwrite == APB_READ;
+                             req.addr == util_transaction.paddr;
+                             req.pdata == mem_data;})
+          mem_data++;
+        end
+      end
+    end
+    else begin
+      if(m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1) begin
+        slave_mem[util_transaction.paddr] = util_transaction.pdata; 
+        //DUMMY response information
+        `uvm_do_with(req, {req.pwrite == APB_WRITE;
+                           req.addr == util_transaction.paddr;
+                           req.pdata == util_transaction.pdata;})
+    end
     `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
   endtask: body
-endclass: read_seq
-   
-//=============================================================================
-// Read After Write
-//=============================================================================
-class read_after_write_seq extends apb_master_base_seq; 
-  `uvm_object_utils(read_after_write  
-
-  function new(string name = "read_after_write_seq");
-    super.new(name);
-  endfunction: new
-
-  virtual task body();
-    `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
-    `uvm_do_with(req, {req.pwrite = APB_WRITE})
-    `uvm_do_with(req, {req.pwrite = APB_READ})
-    `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
-  endtask: body
-
-endclass: read_after_write_seq
-
-//=============================================================================
-// Multiple Read After Write
-//=============================================================================
-class multiple_read_after_write_seq extends apb_master_base_seq; 
-  `uvm_object_utils(multiple_read_after_write  
-  
-  read_after_write_seq raw_seq;
-  int unsigned num_seq;
-  
-  constraint c_num_seq {num_seq inside {[5:10]};} 
-
-  function new(string name = "multiple_read_after_write_seq");
-    super.new(name);
-  endfunction: new
-
-  virtual task body();
-    `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
-    for(int i = 0; i < num_seq; i++)
-      `uvm_info(get_type_name(), $sformatf("Execiting sequence #[%0d]", i), UVM_MEDIUM)
-      `uvm_do(raw_seq)
-    `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
-  endtask: body
-
-endclass: multiple_read_after_write_seq
+endclass: mem_response_seq
 
 
