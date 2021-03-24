@@ -57,27 +57,27 @@ class apb_master_driver extends uvm_driver #(apb_transaction);
     extern virtual protected task drive_data_phase(apb_transaction trans);
 endclass: apb_master_driver
 
-virtual function void apb_master_driver::build_phase(uvm_phase phase);
+function void apb_master_driver::build_phase(uvm_phase phase);
     super.build_phase(phase);
     if(cfg == null)
         if(!uvm_config_db#(apb_transaction)::get(this, "", "cfg", cfg))
             `uvm_error("[NOCONFIG]", {"apb_config has not been set for:", get_full_name()})
 endfunction: build_phase
 
-virtual function void apb_master_driver::connect_phase(uvm_phase phase);
+function void apb_master_driver::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
     if(vif == null) begin
-        if(!uvm_con fig_db#(virtual apb_if)::get(this, "", "vif", vif))
-            `uvm_error("[NOVIF]", {"virtual interface must be set for: ", get_full_name(), ".vif"})
+        if(!uvm_config_db#(apb_if)::get(this, "", "vif", vif))
+            `uvm_error("[NOVIF]", {"interface must be set for: ", get_full_name(), ".vif"})
     end
 endfunction: connect_phase
 
-virtual task apb_master_driver::run_phase(uvm_phase phase);
+task apb_master_driver::run_phase(uvm_phase phase);
     reset();
     get_and_drive();
 endtask
 
-virtual protected task apb_master_driver::get_and_drive();
+task apb_master_driver::get_and_drive();
     @(negedge vif.preset_n)
     `uvm_info("[APB_MASTER_DRIVER]", "get_and_drive: Reset dropped", UVM_MEDIUM) 
     forever begin
@@ -103,7 +103,7 @@ virtual protected task apb_master_driver::get_and_drive();
     end
 endtask: get_and_drive
 
-virtual protected task apb_master_driver::reset();
+task apb_master_driver::reset();
     wait(!vif.preset_n)
     `uvm_info("[APB_MASTER_DRIVER]", "[Reset....]", UVM_MEDIUM)
     vif.paddr     <= '0;
@@ -115,18 +115,18 @@ virtual protected task apb_master_driver::reset();
     vif.pprot     <= '0;
 endtask: reset
 
-virtual protected task apb_master_driver::drive_transfer(apb_transaction trans);
+task apb_master_driver::drive_transfer(apb_transaction trans);
     begin_tr(trans, "[APB_MASTER_DRIVER]", "UVM_DEBUG", "Start driving transation");
     if(trans.transmit_delay > 0) begin
         repeat(trans.transmit_delay) @(posedge vif.pclk);
     end
     drive_address_phase(trans);
     drive_data_phase(trans);
-    `uvm_info("[APB_MASTER_DRIVER]", $sformatf("Finish driving transaction"))
+    `uvm_info("[APB_MASTER_DRIVER]", $sformatf("Finish driving transaction"), UVM_MEDIUM)
     end_tr(trans);
 endtask: drive_transfer
 
-virtual protected task apb_master_driver::drive_address_phase(apb_transaction trans);
+task apb_master_driver::drive_address_phase(apb_transaction trans);
     int slave_index;
     slave_index = cfg.get_slave_psel(trans.paddr);
     vif.paddr   <= trans.paddr;
@@ -139,10 +139,10 @@ virtual protected task apb_master_driver::drive_address_phase(apb_transaction tr
         vif.pwdata <= trans.pdata;
 endtask: drive_address_phase
 
-virtual protected task apb_master_driver::drive_data_phase(apb_transaction trans);
+task apb_master_driver::drive_data_phase(apb_transaction trans);
     vif.penable <= 1;
     @(posedge vif.pclk iff (vif.pready));
-    if(trans.pwrite == APB_READ) begin
+    if(trans.pwrite == APB_READ) //Hung_db_24_3 begin
         trans.data = vif.prdata;
     trans.pslverr = vif.pslverr;
     @(posedge vif.pclk);
