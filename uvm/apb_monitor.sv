@@ -30,7 +30,7 @@
 //   v0.0     22.03.2021  hungbk99  First Creation  
 //----------------------------------------------------------------------
 
-class apb_monitor extends uvm_monitor #(apb_transacion);
+class apb_monitor extends uvm_monitor #(apb_transaction);
   //Virtual interface
   virtual apb_if  vif;
 
@@ -101,8 +101,8 @@ class apb_monitor extends uvm_monitor #(apb_transacion);
 
   //Constructor
   function new(string name, uvm_component parent);
-    new(name, parent);
-    trans_collected = apb_transacion::type_id::create("trans_collected", this);
+    super.new(name, parent);
+    trans_collected = apb_transaction::type_id::create("trans_collected", this);
     item_collected_port = new("item_collected_port", this);
     addr_trans_port = new("addr_trans_port", this);
     coll_mon_export = new("coll_mon_export", this);
@@ -115,7 +115,7 @@ class apb_monitor extends uvm_monitor #(apb_transacion);
   //Receive transaction from collector  
   extern virtual function void write(apb_transaction trans);
   //Provide data to sequencer
-  extern virtual task peek(output apb_transaction);
+  extern virtual task peek(output apb_transaction trans);
   extern virtual function void perform_check();
   extern virtual function void perform_coverage();
   extern virtual function void report_phase(uvm_phase phase);
@@ -126,7 +126,7 @@ function void apb_monitor::build_phase(uvm_phase phase);
   super.build_phase(phase);
   if(cfg == null) begin
     if(!uvm_config_db#(apb_config)::get(this, "", "cfg", cfg))
-      `uvm_error("[NOCONFIG]", "apb_config is not set for: ", get_full_name())
+      `uvm_error("[NOCONFIG]", {"apb_config is not set for: ", get_full_name(), ".cfg"})
   end
 endfunction: build_phase
 
@@ -138,6 +138,12 @@ task apb_monitor::run_phase(uvm_phase phase);
     -> addr_trans_event;
   end
 endtask: run_phase
+
+//TASK: peek() - [slave agent]sequencer::monitor
+task apb_monitor::peek(output apb_transaction trans);
+  @addr_trans_event;
+  trans = trans_collected;
+endtask: peek
 
 //FUNCTION: write() - receive completed transaction from collected
 function apb_monitor::write(apb_transaction trans);
