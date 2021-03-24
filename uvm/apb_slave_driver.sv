@@ -52,7 +52,7 @@ endclass: apb_slave_driver
 
 function void apb_slave_driver::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-    if(!uvm_config_db #(apb_if)::get(this, "", "vif", vif);
+  if(!uvm_config_db #(apb_if)::get(this, "", "vif", vif))
         `uvm_error("[NOVIF]", {"interface must be set for: ", get_full_name(), ".vif"})
 endfunction: connect_phase
 
