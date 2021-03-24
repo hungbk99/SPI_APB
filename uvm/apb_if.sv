@@ -53,5 +53,5 @@ interface apb_if(input pclk, input preset_n);
   bit                     check_enable = 1;
   bit                     coverage_enable = 1;
   //Assertion checks
-  `include "./apb_assertion.sv"
+  `include "./uvmlib/apb_assertion.sv"
 endinterface: apb_if

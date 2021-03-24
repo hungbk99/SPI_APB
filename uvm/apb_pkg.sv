@@ -1,5 +1,5 @@
 /*******************************************************************************
-  FILE : apb_slave_sequencer.sv
+  FILE : apb_pkg.sv"
 *******************************************************************************/
 //   Copyright 1999-2010 Cadence Design Systems, Inc.
 //   All Rights Reserved Worldwide
@@ -20,39 +20,38 @@
 //----------------------------------------------------------------------
 
 /*******************************************************************************
-  FILE : apb_slave_sequencer.sv
+  FILE : apb_pkg.sv"
 *******************************************************************************/
 //   Modifications copyright (C) 2021 Le Quang Hung
 //   All Rights Reserved
 //   Ho Chi Minh University of Technology
 //   Email: quanghungbk1999@gmail.com
 //   Version  Date        Author    Description
-//   v0.0     22.03.2021  hungbk99  First Creation  
+//   v0.0     24.03.2021  hungbk99  First Creation  
 //----------------------------------------------------------------------
 
-class apb_slave_sequencer extends uvm_sequencer #(apb_transaction);
-  //Peek port connect to collector
-  uvm_blocking_peek_port#(apb_transaction) addr_trans_port;
-  
-  //Pointer to configuration class
-  apb_slave_config cfg;
+package apb_pkg;
+    import uvm_pkg::*;
+    `include "uvm_macros.svh"
 
-  //Utilities & automatic macros
-  `uvm_component_utils_begin(apb_slave_sequencer)
-    `uvm_field_object(cfg, UVM_DEFAULT | UVM_REFERENCE)
-  `uvm_component_utils_end
+    `include "./uvmlib/apb_types.sv"
+    //`include "./uvmlib/apb_if.sv"
+    `include "./uvmlib/apb_config.sv"
+    `include "./uvmlib/apb_transaction.sv"
+    
+    `include "./uvmlib/apb_collector.sv"
+    `include "./uvmlib/apb_monitor.sv"
+    
+    `include "./uvmlib/apb_master_driver.sv"
+    `include "./uvmlib/apb_master_sequencer.sv"
+    `include "./uvmlib/apb_master_agent.sv"
+    
+    `include "./uvmlib/apb_slave_driver.sv"
+    `include "./uvmlib/apb_slave_sequencer.sv"
+    `include "./uvmlib/apb_slave_agent.sv"
 
-  //Constructor
-  function new (string name, uvm_component parent);
-    super.new(name, parent);
-    addr_trans_port = new("addr_trans_port", this);
-  endfunction: new
-
-  virtual function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-  endfunction: build_phase
-
-endclass: apb_slave_sequencer
-
-
-
+    `include "./uvmlib/apb_master_sequence_lib.sv"
+    `include "./uvmlib/apb_slave_sequence_lib.sv"
+    
+    `include "./apb_env.sv"
+endpackage: apb_pkg

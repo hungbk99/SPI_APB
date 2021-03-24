@@ -59,7 +59,7 @@ class apb_collector extends uvm_component;
 
   //UVM Utilities & automation macros
   `uvm_component_utils_begin(apb_collector)
-    `uvm_field_object(cfg, UVM_DEFAULT, UVM_REFERENCE)
+    `uvm_field_object(cfg, UVM_DEFAULT | UVM_REFERENCE)
     `uvm_field_int(num_transaction, UVM_DEFAULT)
     `uvm_field_int(check_enable, UVM_DEFAULT)
     `uvm_field_int(coverage_enable, UVM_DEFAULT)
@@ -78,16 +78,16 @@ class apb_collector extends uvm_component;
   extern virtual function void connect_phase(uvm_phase phase);
   extern virtual task run_phase(uvm_phase phase);
   extern virtual protected task collect_transaction();
-  extern virtual task peek(output apb_transaction);
+  extern virtual task peek(output apb_transaction trans);
   extern virtual function void report_phase(uvm_phase phase);
 endclass: apb_collector
 
 //FUNCTION: build_phase()
 function void apb_collector::build_phase(uvm_phase phase);
-  super.build_phase(uvm_phase);
+  super.build_phase(phase);
   if(cfg == null) begin
-    if(!uvm_config_db #(apb_config)::get(this, "", "cfg", cfg);
-      `uvm_error("[NOCONFIG]", "apb_config not set for: ", get_full_name())
+    if(!uvm_config_db #(apb_config)::get(this, "", "cfg", cfg));
+      `uvm_error("[NOCONFIG]", {"apb_config not set for: ", get_full_name(), ".cfg"})
   end
 endfunction: build_phase
 
@@ -96,7 +96,7 @@ function void apb_collector::connect_phase(uvm_phase phase);
   super.connect_phase(phase);
   if(vif == null) begin
     if(!uvm_config_db#(apb_config)::get(this, "", "vif", vif))
-      `uvm_error("[NOVIF]", "virtual interface must be set for: ", get_full_name(), ".vif")
+      `uvm_error("[NOVIF]", {"virtual interface must be set for: ", get_full_name(), ".vif"})
   end
 endfunction: connect_phase
 
@@ -121,7 +121,7 @@ task apb_collector::collect_transaction();
     
     @(posedge vif.pclk)
     if(trans_collected.pwrite == APB_READ)
-      trans_collected.pdata = vif.prdata
+      trans_collected.pdata = vif.prdata;
     else if(trans_collected.pwrite == APB_WRITE)
       trans_collected.pdata = vif.pwdata;
     -> addr_trans_event;
@@ -130,7 +130,7 @@ task apb_collector::collect_transaction();
     if(trans_collected.pwrite == APB_READ) begin
       while(vif.pready == 0) 
         @(posedge vif.pclk);
-      trans_collected.pdata = vif.prdata
+      trans_collected.pdata = vif.prdata;
     end
 
     end_tr(trans_collected);
@@ -147,7 +147,7 @@ task apb_collector::peek(output apb_transaction trans);
   trans = trans_collected;
 endtask: peek
 
-function apb_collector: report_phase(uvm_phase phase);
+function apb_collector::report_phase(uvm_phase phase);
   super.report_phase(phase);
   `uvm_info("[REPORT_APB_COLLECTOR]", $sformatf("apb_collector collects %0d transactions", num_transactions), UVM_LOW)
 endfunction: report_phase
