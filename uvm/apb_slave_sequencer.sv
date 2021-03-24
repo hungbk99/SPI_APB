@@ -35,7 +35,7 @@ class apb_slave_sequencer extends uvm_sequencer #(apb_transaction);
   uvm_blocking_peek_port#(apb_transaction) addr_trans_port;
   
   //Pointer to configuration class
-  apb_config cfg;
+  apb_slave_config cfg;
 
   //Utilities & automatic macros
   `uvm_component_utils_begin(apb_slave_sequencer)
