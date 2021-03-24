@@ -62,7 +62,7 @@ endclass: apb_master_agent
 //FUNCTION: build_phase()
 function apb_master_agent::build_phase(uvm_phase phase);
   if(cfg == null) begin
-    if(!uvm_config_db#(apb_config)::get(this, "", "cfg", cfg);
+    if(!uvm_config_db#(apb_config)::get(this, "", "cfg", cfg))
       `uvm_warning("[NOCONFIG]", {"apb_config is not set for: ", get_full_name(), "[using default config]"})
   end
   
@@ -85,7 +85,7 @@ function apb_master_agent::connect_phase(uvm_phase phase);
 endfunction: connect_phase
 
 //FUNCTION: update_config()
-function void apb_master_agent::update_config();
+function void apb_master_agent::update_config(apb_config cfg);
   if(is_active == UVM_ACTIVE) begin
     sequencer.cfg = cfg;
     driver.cfg = cfg;
