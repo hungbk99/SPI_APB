@@ -47,7 +47,7 @@ class apb_transaction extends uvm_sequence_item;
  
   //Constraints
   constraint c_addr  { paddr[1:0] == 2'b00; }
-  constraint c_pstrb { pstrb dist {15:= 9, [0;14]:/1}; }
+  constraint c_pstrb { pstrb dist {15:= 9, [0:14]:/1}; }
   constraint c_pready { pready dist {1:= 9, 0:=1}; }
   constraint c_pready_delay { pready_delay dist {0:=8, 1:=1, 2:=1}; }
 
@@ -73,10 +73,10 @@ class apb_transaction extends uvm_sequence_item;
 
   virtual task print_apb_seq();
     if(pwrite == APB_READ)
-      `uvm_info("[APB_SEQ]", $sformatf("[READ TRANSFER]::prdata = %0h, paddr = %0h", 
-                                        pdata, paddr);
+      `uvm_info("[APB_SEQ]", $sformatf("[READ TRANSFER]::prdata = %0h, paddr = %0h",  
+                                        pdata, paddr), UVM_HIGH)
     else
       `uvm_info("[APB_SEQ]", $sformatf("[WRITE TRANSFER]::pwdata = %0h, paddr = %0h", 
-                                        pdata, paddr);
+                                        pdata, paddr), UVM_HIGH)
   endtask: print_apb_seq
-endfunction: apb_transaction
+endclass: apb_transaction
