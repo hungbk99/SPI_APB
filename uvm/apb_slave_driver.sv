@@ -50,19 +50,19 @@ class apb_slave_driver extends uvm_driver #(apb_transaction);
     extern virtual protected task respond(apb_transaction resp);
 endclass: apb_slave_driver
 
-virtual function void apb_slave_driver::connect_phase(uvm_phase phase);
+function void apb_slave_driver::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-    if(!uvm_config_db #(virtual apb_if)::get(this, "", "vif", vif);
-        `uvm_error("[NOVIF]", {"virtual interface must be set for: ", get_full_name(), ".vif"})
+    if(!uvm_config_db #(apb_if)::get(this, "", "vif", vif);
+        `uvm_error("[NOVIF]", {"interface must be set for: ", get_full_name(), ".vif"})
 endfunction: connect_phase
 
-virtual task apb_slave_driver::run_phase(uvm_phase phase);
+task apb_slave_driver::run_phase(uvm_phase phase);
     super.connect_phase(phase);
     reset();
     get_and_drive();
 endtask: run_phase
 
-virtual protected task apb_slave_driver::get_and_drive();
+task apb_slave_driver::get_and_drive();
     @(negedge vif.preset_n)
     `uvm_info("[APB_MASTER_DRIVER]", "get_and_drive: Reset dropped", UVM_MEDIUM) 
     forever begin
@@ -87,7 +87,7 @@ virtual protected task apb_slave_driver::get_and_drive();
     end
 endtask: get_and_drive
 
-virtual protected task apb_slave_driver::reset();
+task apb_slave_driver::reset();
     wait(!vif.preset_n);
     `uvm_info("[APB_SLAVE_DRIVER]", "[Reset...]", UVM_MEDIUM) 
     vif.prdata  <= 'z;
@@ -95,7 +95,7 @@ virtual protected task apb_slave_driver::reset();
     vif.pslverr <= 0;
 endtask: reset
 
-virtual protected task apb_slave_driver::respond(apb_transaction resp);
+task apb_slave_driver::respond(apb_transaction resp);
     //Debug
     begin
         vif.pready <= 1;
