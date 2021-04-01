@@ -60,7 +60,7 @@ class apb_master_agent extends uvm_agent;
 endclass: apb_master_agent
 
 //FUNCTION: build_phase()
-function apb_master_agent::build_phase(uvm_phase phase);
+function void apb_master_agent::build_phase(uvm_phase phase);
   if(cfg == null) begin
     if(!uvm_config_db#(apb_config)::get(this, "", "cfg", cfg))
       `uvm_warning("[NOCONFIG]", {"apb_config is not set for: ", get_full_name(), "[using default config]"})
@@ -75,7 +75,7 @@ function apb_master_agent::build_phase(uvm_phase phase);
 endfunction: build_phase
 
 //FUNCTION: connect_phase()
-function apb_master_agent::connect_phase(uvm_phase phase);
+function void apb_master_agent::connect_phase(uvm_phase phase);
   super.connect_phase(phase);
   collector.item_collected_port.connect(monitor.coll_mon_export); //write()
   monitor.addr_trans_port.connect(collector.addr_trans_export); //peek()
