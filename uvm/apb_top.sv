@@ -15,6 +15,8 @@
 module apb_top();
     import uvm_pkg::*;
     `include "uvm_macros.svh"
+    
+    import apb_pkg::*;
     `include "apb_test.sv"
 
     logic pclk;
@@ -23,12 +25,11 @@ module apb_top();
     apb_if    apb_if0(pclk, preset_n);
 
     initial begin
-        run_test();
+        uvm_config_db#(virtual apb_if)::set(null, "*.apb_env0*", "vif", apb_if0);
+        run_test("apb_test");
     end
 
     initial begin
-        uvm_config_db#(virtual apb_if)::set(null, "*.apb_env0*", "vif", apb_if0);
-
         preset_n <= 1'b0;
         pclk <= 1'b0;
     end
