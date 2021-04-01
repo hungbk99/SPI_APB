@@ -60,7 +60,7 @@ class apb_collector extends uvm_component;
   //UVM Utilities & automation macros
   `uvm_component_utils_begin(apb_collector)
     `uvm_field_object(cfg, UVM_DEFAULT | UVM_REFERENCE)
-    `uvm_field_int(num_transaction, UVM_DEFAULT)
+    `uvm_field_int(num_transactions, UVM_DEFAULT)
     `uvm_field_int(check_enable, UVM_DEFAULT)
     `uvm_field_int(coverage_enable, UVM_DEFAULT)
   `uvm_component_utils_end
@@ -70,7 +70,7 @@ class apb_collector extends uvm_component;
     super.new(name, parent);
     trans_collected = apb_transaction::type_id::create("trans_collected");
     item_collected_port = new("item_collected_port", this);
-    addr_trans_port = new("addr_trans_port", this);
+    addr_trans_export = new("addr_trans_export", this);
   endfunction: new
 
   //Class methods
@@ -95,7 +95,7 @@ endfunction: build_phase
 function void apb_collector::connect_phase(uvm_phase phase);
   super.connect_phase(phase);
   if(vif == null) begin
-    if(!uvm_config_db#(apb_config)::get(this, "", "vif", vif))
+    if(!uvm_config_db#(virtual apb_if)::get(this, "", "vif", vif))
       `uvm_error("[NOVIF]", {"virtual interface must be set for: ", get_full_name(), ".vif"})
   end
 endfunction: connect_phase
@@ -115,7 +115,11 @@ task apb_collector::collect_transaction();
     trans_collected.paddr = vif.paddr;
     trans_collected.master = cfg.master_config.name;
     trans_collected.slave = cfg.get_slave_name(trans_collected.paddr);
-    trans_collected.pwrite = vif.pwrite;
+    //Hung_mod_30_3_2021 trans_collected.pwrite = vif.pwrite;
+    if(vif.pwrite == APB_READ)
+      trans_collected.pwrite = APB_READ;
+    else
+      trans_collected.pwrite = APB_WRITE;
     trans_collected.pprot = vif.pprot;
     trans_collected.pstrb = vif.pstrb;
     
@@ -147,7 +151,7 @@ task apb_collector::peek(output apb_transaction trans);
   trans = trans_collected;
 endtask: peek
 
-function apb_collector::report_phase(uvm_phase phase);
+function void apb_collector::report_phase(uvm_phase phase);
   super.report_phase(phase);
   `uvm_info("[REPORT_APB_COLLECTOR]", $sformatf("apb_collector collects %0d transactions", num_transactions), UVM_LOW)
 endfunction: report_phase
