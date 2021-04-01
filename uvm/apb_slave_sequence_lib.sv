@@ -35,6 +35,7 @@
 //=============================================================================
 class apb_slave_base_seq extends uvm_sequence #(apb_transaction); 
   `uvm_object_utils(apb_slave_base_seq)
+  `uvm_declare_p_sequencer(apb_slave_sequencer)    //Hung_mod_30_3_2021
 
   function new(string name = "apb_slave_base_seq");
     super.new(name);
@@ -66,9 +67,11 @@ class simple_response_seq extends apb_slave_base_seq;
   virtual task body();
     `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
     forever begin
-      m_sequencer.addr_trans_port.peek(util_transaction);
+      //Hung_mod_30_3_2021 m_sequencer.addr_trans_port.peek(util_transaction);
+      p_sequencer.addr_trans_port.peek(util_transaction);
       if((util_transaction.pwrite == APB_READ) &&
-        (m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) begin
+        //Hung_mod_30_3_2021 (m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) begin
+        (p_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) begin
         `uvm_info(get_type_name(), $sformatf("Address: %h range matching read", util_transaction.paddr), UVM_MEDIUM)
         `uvm_do_with(req, {req.pwrite == APB_READ;})
       end
@@ -91,33 +94,36 @@ class mem_response_seq extends apb_slave_base_seq;
  
   rand logic [31:0] mem_data;  
   //Mem Value
-  logic bit [31:0] slave_mem [int]
+  logic [31:0] slave_mem [int];
   virtual task body();
     `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
     forever begin
-      m_sequencer.addr_trans_port.peek(util_transaction);
+      //Hung_mod_30_3_2021 m_sequencer.addr_trans_port.peek(util_transaction);
+      p_sequencer.addr_trans_port.peek(util_transaction);
       if((util_transaction.pwrite == APB_READ) &&
-        (m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) begin
+        //Hung_mod_30_3_2021 (m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) 
+        (p_sequencer.cfg.check_address_range(util_transaction.paddr) == 1)) 
+      begin
         `uvm_info(get_type_name(), $sformatf("Address: %h range matching read", util_transaction.paddr), UVM_MEDIUM)
-        if(slave_mem.exits(util_transaction.paddr)
+        if(slave_mem.exists(util_transaction.paddr))
           `uvm_do_with(req, {req.pwrite == APB_READ;
-                             req.addr == util_transaction.paddr;
+                             req.paddr == util_transaction.paddr;
                              req.pdata == slave_mem[util_transaction.paddr];})
         else begin                   
           `uvm_do_with(req, {req.pwrite == APB_READ;
-                             req.addr == util_transaction.paddr;
+                             req.paddr == util_transaction.paddr;
                              req.pdata == mem_data;})
           mem_data++;
         end
       end
-    end
-    else begin
-      if(m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1) begin
-        slave_mem[util_transaction.paddr] = util_transaction.pdata; 
-        //DUMMY response information
-        `uvm_do_with(req, {req.pwrite == APB_WRITE;
-                           req.addr == util_transaction.paddr;
+      //Hung_mod_30_3_2021 else if(m_sequencer.cfg.check_address_range(util_transaction.paddr) == 1) begin
+      else if(p_sequencer.cfg.check_address_range(util_transaction.paddr) == 1) begin
+          slave_mem[util_transaction.paddr] = util_transaction.pdata; 
+          //DUMMY response information
+          `uvm_do_with(req, {req.pwrite == APB_WRITE;
+                           req.paddr == util_transaction.paddr;
                            req.pdata == util_transaction.pdata;})
+      end
     end
     `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
   endtask: body
