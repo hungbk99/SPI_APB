@@ -92,7 +92,7 @@ function void apb_env::build_phase(uvm_phase phase);
     master = apb_master_agent::type_id::create("master", this);
     slaves = new[cfg.slave_configs.size()];
     foreach(slaves[i]) begin
-        slaves[i] = apb_slave_agent::tye_id::create($sformatf("slaves[%0d]", i), this);
+        slaves[i] = apb_slave_agent::type_id::create($sformatf("slaves[%0d]", i), this);
     end
 
 endfunction: build_phase
@@ -101,14 +101,14 @@ function void apb_env::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
     if(vif == null) begin
         if(!uvm_config_db#(virtual apb_if)::get(this, "", "vif", vif)) 
-            `uvm_info("[NOVIF]", "virtual interface is not set for: ", get_full_name(), ".vif"})
+            `uvm_info("[NOVIF]", {"virtual interface is not set for: ", get_full_name(), ".vif"}, UVM_HIGH)
     end
     
-    bus_collector.item_collected_port.connect(bus_monitor.coll_mon_port);
+    bus_collector.item_collected_port.connect(bus_monitor.coll_mon_export);
     bus_monitor.addr_trans_port.connect(bus_collector.addr_trans_export);
 
     //Set Verbosity Level
-    master.mobitor.set_report_verbosity_level(UVM_NONE);
+    master.monitor.set_report_verbosity_level(UVM_NONE);
     master.collector.set_report_verbosity_level(UVM_NONE);
     
     foreach(slaves[i]) begin
@@ -130,15 +130,15 @@ function void apb_env::update_config(apb_config cfg);
     bus_collector.cfg = cfg;
     master.update_config(cfg);
     foreach(slaves[i]) 
-        slaves[i].updata_config(cfg);
+        slaves[i].update_config(cfg.slave_configs[i]);
 endfunction: update_config
 
-function void apb_env::update_vif_control();
+task apb_env::update_vif_control();
     forever begin
         vif.check_enable = check_enable;
         vif.coverage_enable = coverage_enable;
     end
-endfunction: update_vif_control
+endtask: update_vif_control
 
 task apb_env::run_phase(uvm_phase phase);
     fork
