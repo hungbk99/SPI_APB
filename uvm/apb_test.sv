@@ -9,6 +9,8 @@
 //   v0.0     24.03.2021  hungbk99  First Creation  
 //----------------------------------------------------------------------
 
+//`include "uvmlib/apb_pkg.sv"
+
 class apb_test extends uvm_test;
     `uvm_component_utils(apb_test)
 
@@ -28,6 +30,7 @@ class apb_test extends uvm_test;
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
+        apb_env0 = apb_env::type_id::create("apb_env0", this);
         master_seq0 = write_seq::type_id::create("master_seq0", this);
         slave_seq0 = simple_response_seq::type_id::create("slave_seq0", this);
     endfunction: build_phase
@@ -43,11 +46,11 @@ class apb_test extends uvm_test;
             begin
                 #100
                 $display("==========================");
-                 `uvm_warning("[APB_TEST]" "[TIME OUT]");
+                 `uvm_warning("[APB_TEST]", "[TIME OUT]")
                 $display("==========================");
             end
         join_any
         disable fork;
         phase.drop_objection(this);
-    endtaskL run_phase
+    endtask: run_phase
 endclass: apb_test
