@@ -30,7 +30,7 @@
 //   v0.0     22.03.2021  hungbk99  First Creation  
 //----------------------------------------------------------------------
 
-class apb_monitor extends uvm_monitor #(apb_transaction);
+class apb_monitor extends uvm_monitor;
   //Virtual interface
   virtual apb_if  vif;
 
@@ -60,7 +60,7 @@ class apb_monitor extends uvm_monitor #(apb_transaction);
   event addr_trans_event;
 
   //Current transaction
-  apb_transaction trans_colllected;
+  apb_transaction trans_collected;
 
   //Utilities & Automation macros
   `uvm_component_utils_begin(apb_monitor)
@@ -106,7 +106,8 @@ class apb_monitor extends uvm_monitor #(apb_transaction);
     item_collected_port = new("item_collected_port", this);
     addr_trans_port = new("addr_trans_port", this);
     coll_mon_export = new("coll_mon_export", this);
-    addr_trans_export = new("addr_trans_port", this);
+    //Hung_debug_31_3_2021 addr_trans_export = new("addr_trans_port", this);
+    addr_trans_export = new("addr_trans_export", this);
   endfunction: new
 
   //Class methods
@@ -133,8 +134,8 @@ endfunction: build_phase
 //TASK: run_phase()
 task apb_monitor::run_phase(uvm_phase phase);
   forever begin
-    addr_trans_port.peek(trans_colllected); //address phase
-    `uvm_info(get_type_name(), $sformatf("Address phase completed: %0h, [%s]", trans_colllected.paddr, trans_colllected.pwrite), UVM_HIGH)
+    addr_trans_port.peek(trans_collected); //address phase
+    `uvm_info(get_type_name(), $sformatf("Address phase completed: %0h, [%s]", trans_collected.paddr, trans_collected.pwrite), UVM_HIGH)
     -> addr_trans_event;
   end
 endtask: run_phase
@@ -146,10 +147,10 @@ task apb_monitor::peek(output apb_transaction trans);
 endtask: peek
 
 //FUNCTION: write() - receive completed transaction from collected
-function apb_monitor::write(apb_transaction trans);
+function void apb_monitor::write(apb_transaction trans);
   $cast(trans_collected, trans.clone()); //data phase
   num_transactions++; 
-  `uvm_info(get_type_name(), {"Transaction completed:\n", trans_colllected.sprint()}, UVM_HIGH)
+  `uvm_info(get_type_name(), {"Transaction completed:\n", trans_collected.sprint()}, UVM_HIGH)
   if(check_enable) perform_check();
   if(coverage_enable) perform_coverage();
   //Broadcast transaction to other components
