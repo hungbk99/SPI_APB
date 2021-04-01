@@ -64,7 +64,7 @@ class write_seq extends apb_master_base_seq;
 
   virtual task body();
     `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
-    `uvm_do_with(req, {req.pwrite = APB_WRITE})
+    `uvm_do_with(req, {req.pwrite == APB_WRITE;})
     `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
   endtask: body
 endclass: write_seq
@@ -81,7 +81,7 @@ class read_seq extends apb_master_base_seq;
 
   virtual task body();
     `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
-    `uvm_do_with(req, {req.pwrite = APB_READ})
+    `uvm_do_with(req, {req.pwrite == APB_READ;})
     `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
   endtask: body
 endclass: read_seq
@@ -90,7 +90,7 @@ endclass: read_seq
 // Read After Write
 //=============================================================================
 class read_after_write_seq extends apb_master_base_seq; 
-  `uvm_object_utils(read_after_write  
+  `uvm_object_utils(read_after_write_seq)  
 
   function new(string name = "read_after_write_seq");
     super.new(name);
@@ -98,8 +98,8 @@ class read_after_write_seq extends apb_master_base_seq;
 
   virtual task body();
     `uvm_info(get_type_name(), "Starting ...", UVM_LOW)
-    `uvm_do_with(req, {req.pwrite = APB_WRITE})
-    `uvm_do_with(req, {req.pwrite = APB_READ})
+    `uvm_do_with(req, {req.pwrite == APB_WRITE;})
+    `uvm_do_with(req, {req.pwrite == APB_READ;})
     `uvm_info(get_type_name(), req.sprint(), UVM_HIGH)  
   endtask: body
 
@@ -109,7 +109,7 @@ endclass: read_after_write_seq
 // Multiple Read After Write
 //=============================================================================
 class multiple_read_after_write_seq extends apb_master_base_seq; 
-  `uvm_object_utils(multiple_read_after_write  
+  `uvm_object_utils(multiple_read_after_write_seq) 
   
   read_after_write_seq raw_seq;
   int unsigned num_seq;
