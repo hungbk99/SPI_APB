@@ -53,5 +53,5 @@ package apb_pkg;
     `include "./uvmlib/apb_master_sequence_lib.sv"
     `include "./uvmlib/apb_slave_sequence_lib.sv"
     
-    `include "./apb_env.sv"
+    `include "./uvmlib/apb_env.sv"
 endpackage: apb_pkg
