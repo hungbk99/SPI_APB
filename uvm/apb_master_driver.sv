@@ -60,14 +60,14 @@ endclass: apb_master_driver
 function void apb_master_driver::build_phase(uvm_phase phase);
     super.build_phase(phase);
     if(cfg == null)
-        if(!uvm_config_db#(apb_transaction)::get(this, "", "cfg", cfg))
+        if(!uvm_config_db#(apb_config)::get(this, "", "cfg", cfg))
             `uvm_error("[NOCONFIG]", {"apb_config has not been set for:", get_full_name()})
 endfunction: build_phase
 
 function void apb_master_driver::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
     if(vif == null) begin
-        if(!uvm_config_db#(apb_if)::get(this, "", "vif", vif))
+        if(!uvm_config_db#(virtual apb_if)::get(this, "", "vif", vif))
             `uvm_error("[NOVIF]", {"interface must be set for: ", get_full_name(), ".vif"})
     end
 endfunction: connect_phase
@@ -92,7 +92,7 @@ task apb_master_driver::get_and_drive();
                 forever begin
                     @(posedge vif.pclk iff (vif.preset_n))
                     seq_item_port.get_next_item(req);
-                    driver_transfer(req);
+                    drive_transfer(req);
                     seq_item_port.item_done();
                 end
             end
@@ -143,7 +143,7 @@ task apb_master_driver::drive_data_phase(apb_transaction trans);
     vif.penable <= 1;
     @(posedge vif.pclk iff (vif.pready));
     if(trans.pwrite == APB_READ) //Hung_db_24_3 begin
-        trans.data = vif.prdata;
+        trans.pdata = vif.prdata;
     trans.pslverr = vif.pslverr;
     @(posedge vif.pclk);
     vif.penable <= 0;
