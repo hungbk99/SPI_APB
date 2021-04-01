@@ -39,8 +39,8 @@ class apb_slave_agent extends uvm_agent;
   apb_slave_config  cfg;
 
   //Agent component
-  collector           collector;
-  monitor             monitor;
+  apb_collector           collector;
+  apb_monitor             monitor;
   apb_slave_sequencer sequencer;
   apb_slave_driver    driver;
 
@@ -62,9 +62,9 @@ class apb_slave_agent extends uvm_agent;
 endclass: apb_slave_agent
 
 //FUNCTION: build_phase()
-function apb_slave_agent::build_phase(uvm_phase phase);
+function void apb_slave_agent::build_phase(uvm_phase phase);
   if(cfg == null) begin
-    if(!uvm_config_db#(apb_config)::get(this, "", "cfg", cfg);
+    if(!uvm_config_db#(apb_slave_config)::get(this, "", "cfg", cfg))
       `uvm_warning("[NOCONFIG]", {"apb_config is not set for: ", get_full_name(), "[using default config]"})
   end
 
@@ -77,16 +77,18 @@ function apb_slave_agent::build_phase(uvm_phase phase);
 endfunction: build_phase
 
 //FUNCTION: connect_phase()
-function apb_slave_agent::connect_phase(uvm_phase phase);
+function void apb_slave_agent::connect_phase(uvm_phase phase);
   super.connect_phase(phase);
-  monitor.item_collected_port.connect(collector.item_collected_export); //write()
-  collector.addr_trans_port.connect(monitor.addr_trans_export); //peek()
+  //monitor.item_collected_port.connect(collector.item_collected_export); //write()
+  //collector.addr_trans_port.connect(monitor.addr_trans_export); //peek()
+  monitor.addr_trans_port.connect(collector.addr_trans_export); //peek()
+  collector.item_collected_port.connect(monitor.coll_mon_export); //write()
   if(is_active == UVM_ACTIVE) begin
     driver.seq_item_port.connect(sequencer.seq_item_export);
   end
 endfunction: connect_phase
 
-function apb_slave_agent::update_config(apb_slave_config cfg);
+function void apb_slave_agent::update_config(apb_slave_config cfg);
   if(is_active == UVM_ACTIVE)
     sequencer.cfg = cfg;
 endfunction: update_config
