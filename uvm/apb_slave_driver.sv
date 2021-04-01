@@ -47,12 +47,12 @@ class apb_slave_driver extends uvm_driver #(apb_transaction);
     extern virtual task run_phase(uvm_phase phase);
     extern virtual protected task get_and_drive();
     extern virtual protected task reset();
-    extern virtual protected task respond(apb_transaction resp);
+    extern virtual protected task response(apb_transaction resp);
 endclass: apb_slave_driver
 
 function void apb_slave_driver::connect_phase(uvm_phase phase);
     super.connect_phase(phase);
-  if(!uvm_config_db #(apb_if)::get(this, "", "vif", vif))
+    if(!uvm_config_db #(virtual apb_if)::get(this, "", "vif", vif))
         `uvm_error("[NOVIF]", {"interface must be set for: ", get_full_name(), ".vif"})
 endfunction: connect_phase
 
@@ -76,7 +76,7 @@ task apb_slave_driver::get_and_drive();
             begin
                 forever begin
                     seq_item_port.get_next_item(req);
-                    get_and_drive(req);
+                    response(req);
                     seq_item_port.item_done();
                 end
             end
@@ -95,18 +95,18 @@ task apb_slave_driver::reset();
     vif.pslverr <= 0;
 endtask: reset
 
-task apb_slave_driver::respond(apb_transaction resp);
+task apb_slave_driver::response(apb_transaction resp);
     //Debug
     begin
         vif.pready <= 1;
-        if((resp.pready == 0) && (trans.pready_delay > 0)) begin
+        if((resp.pready == 0) && (resp.pready_delay > 0)) begin
             resp.pready <= 0;
-            repeat(trans.pready_delay) @(posedge vif.pclk);
+            repeat(resp.pready_delay) @(posedge vif.pclk);
         end
         vif.pready <= 1;
         vif.pslverr <= resp.pslverr;
-        if(resp.pwrite == APB_READ) vif.prdata <= resp.data;
+        if(resp.pwrite == APB_READ) vif.prdata <= resp.pdata;
         @(posedge vif.pclk)
             vif.prdata <= 'z;
     end
-endtask: respond
+endtask: response
