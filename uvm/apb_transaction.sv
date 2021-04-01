@@ -54,7 +54,7 @@ class apb_transaction extends uvm_sequence_item;
   //UVM utilities & automation macros for data items
   `uvm_object_utils_begin(apb_transaction)
     `uvm_field_int(paddr, UVM_DEFAULT)
-    `uvm_field_int(pwdata, UVM_DEFAULT)
+    `uvm_field_int(pdata, UVM_DEFAULT)
     `uvm_field_int(pprot, UVM_DEFAULT)
     `uvm_field_int(pstrb, UVM_DEFAULT)
     `uvm_field_int(pslverr, UVM_DEFAULT)
