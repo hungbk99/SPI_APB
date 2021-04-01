@@ -82,6 +82,10 @@ class apb_config extends uvm_object;
     `uvm_field_int(num_slaves, UVM_DEFAULT)
   `uvm_object_utils_end
 
+  function new(string name = "apb_config");
+    super.new(name);
+  endfunction: new
+
   //Class methods
   extern virtual function void add_slave(string name, int start_address, int end_address,
                                           int psel_index, uvm_active_passive_enum is_active = UVM_ACTIVE);
@@ -91,10 +95,10 @@ class apb_config extends uvm_object;
 endclass: apb_config
 
 function void apb_config::add_slave(string name, int start_address, int end_address, 
-                        int psel_index, uvm_active_passive_enum is_active = UVM_ACIVE);
+                        int psel_index, uvm_active_passive_enum is_active = UVM_ACTIVE);
   apb_slave_config tmp;
   num_slaves++;
-  tmp = apb_slave_config::type_id::create("slave_config", this);  //debug
+  tmp = apb_slave_config::type_id::create("slave_config");  //debug
   tmp.name = name;
   tmp.start_address = start_address;
   tmp.end_address = end_address;
@@ -104,8 +108,8 @@ function void apb_config::add_slave(string name, int start_address, int end_addr
   slave_configs.push_back(tmp);
 endfunction: add_slave
 
-function int apb_config::add_master(string name, uvm_active_passive_enum is_active = UVM_ACTIVE);
-  master_config = apb_master_config::type_id::create("master_config", this);
+function void apb_config::add_master(string name, uvm_active_passive_enum is_active = UVM_ACTIVE);
+  master_config = apb_master_config::type_id::create("master_config");
   master_config.name = name;
   master_config.is_active = is_active;
 endfunction: add_master
