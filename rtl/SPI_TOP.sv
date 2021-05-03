@@ -9,17 +9,20 @@
 import spi_package::*;
 module spi_top
 (
-// spi APB interface
-  output  apb_interfaces_out  apb_slave_out,
-  input   apb_interfaces_in   apb_slave_in,
+// SPI APB interface
+ 	output  apb_interfaces_out  apb_slave_out,
+  	input   apb_interfaces_in   apb_slave_in,
+// SPI Interrupt	
+	output 	logic 				spitxint,					
+	output 	logic 				spirxint,					
 // SPI interface
-  output                      mosi_somi,
-                              ss_0,
-                              ss_1,
-                              ss_2,
-                              ss_3,
-  input                       miso_simo,
-  inout                       sclk                            
+  	output                      mosi_somi,
+  	                            ss_0,
+  	                            ss_1,
+  	                            ss_2,
+  	                            ss_3,
+  	input                       miso_simo,
+  	inout                       sclk                            
 );
 
 //=================================================================
@@ -325,45 +328,48 @@ endmodule: spi_apb_slave
 
 module	spi_control
 (
+//Hung add: SPI interrupt
+	output logic 					spitxint,
+	output logic 					spirxint,		
 //	APB_slave::spi_control
-	output	spicr_type			  cr_out,
-	output	spibr_type			  br_out,
+	output	spicr_type			  	cr_out,
+	output	spibr_type			  	br_out,
 	output	spiinter_type			inter_out,
-	output 	spisr_type			  sr_out,
+	output 	spisr_type			  	sr_out,
 	output 	spirintr_type			rintr_out,
 	output	spiintr_type			intr_out,
-	input 	as2sc				      as2sc_wen,
+	input 	as2sc				    as2sc_wen,
 //	input 	as2sd				      as2sd_wen,
 //	input					clk,
 //						rst_n,
 	input	bus 				wdata,
 //	spi_control::spi_data
-	input	fifo_interrupt			      rfifo_interrupt, 				
-						                      tfifo_interrupt,
-	input	[SPI_POINTER_WIDTH-1:0]		rfifo_status,						
-						                      tfifo_status,
+	input	fifo_interrupt			      	rfifo_interrupt, 				
+						                    tfifo_interrupt,
+	input	[SPI_POINTER_WIDTH-1:0]			rfifo_status,						
+						                    tfifo_status,
 	output 	sc2sd				            sc2sd_control,								
 //	spi_control::Shift Clock Control
-	output 	sc2scc				          sc2scc_control,
+	output 	sc2scc				        	sc2scc_control,
 	input 					                transfer_start_ack,
 //	output 	logic 	                [4:0]			data_len,
 	input 					                transfer_complete,
-  output                          transfer_complete_ack,
+  output                     			    transfer_complete_ack,
 // SPI Interface
-  output  logic                   slave_ena,
-  output  logic [1:0]             slave_select,
-  output  logic                   talk_ena,
+  output  logic     		                slave_ena,
+  output  logic [1:0]             			slave_select,
+  output  logic                   			talk_ena,
 //	System
 	input 					                pclk,
-						                      preset_n	
+						                    preset_n	
 );
 
 //========================================================================================
 // Internal Signals
-	spicr_type	  c_reg;
-	spibr_type	  b_reg;
+	spicr_type	  	c_reg;
+	spibr_type	  	b_reg;
 	spiinter_type	inte_reg;
-	spisr_type	  s_reg;
+	spisr_type	  	s_reg;
 	spirintr_type	rint_reg;
 	spiintr_type	int_reg;
 	
@@ -461,16 +467,21 @@ module	spi_control
 	assign	sc2scc_control.mstr = c_reg.MSTR;
 	assign 	sc2scc_control.cpha = c_reg.CPHA;
 
-  assign 	sc2sd_control.dord = c_reg.DORD;
-  assign  sc2sd_control.datalen = c_reg.DATALEN;
+  	assign 	sc2sd_control.dord = c_reg.DORD;
+  	assign  sc2sd_control.datalen = c_reg.DATALEN;
 
-  assign 	talk_ena = c_reg.TALK;
+  	assign 	talk_ena = c_reg.TALK;
 	assign	sc2scc_control.datalen = c_reg.DATALEN;	 
 	assign	sc2scc_control.spi_br = b_reg.SPIBR;
 
 	assign 	sc2sd_control.tfifo_clear = c_reg.SWR;
 	assign	sc2sd_control.rfifo_clear = c_reg.SWR;
-	
+
+	//Hung_add
+	assign  spitxint = int_reg.SPITXUINT | int_reg.SPITXEINT | int_reg.SPITXOINT | int_reg.SPITXFINT; 
+	assign  spirxint = int_reg.SPIRXUINT | int_reg.SPIRXEINT | int_reg.SPIRXOINT | int_reg.SPIRXFINT; 
+	//Hung_add
+
 //	Transfer Control
 	always_ff @(posedge pclk, negedge preset_n)
 	begin
@@ -497,12 +508,12 @@ module	spi_control
 	assign 	pos_edge_complete = ~sync_3 & sync_2;
 	assign 	sc2sd_control.tfifo_ren = pos_edge_complete & tfifo_interrupt.fifo_empty; //The empty flag ensures that SPI won't read the tfifo after all data has been transferd
 	assign	sc2sd_control.rfifo_wen = pos_edge_complete;
-  assign  transfer_complete_ack = sync_2;
+	assign  transfer_complete_ack = sync_2;
 
 	always_comb begin
-    transfer_trigger = 1'b0;
+	    transfer_trigger = 1'b0;
 		unique case (transfer_state) 
-    IDLE: 
+	    IDLE: 
 		begin
 			if(!tfifo_interrupt.fifo_empty)
 				transfer_next_state = INITIAL;
