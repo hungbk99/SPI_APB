@@ -927,7 +927,8 @@ module spi_shift
                   spi_receive_reg;
 //======================================================================
 //  SPI Shift Register
-  always_ff @(posedge pclk, posedge transfer_complete)
+  //Hung_db always_ff @(posedge pclk, posedge transfer_complete)
+  always_ff @(posedge shift_clock, posedge transfer_complete)
   begin
       if (transfer_complete)
         spi_shift_reg <= transfer_data;      
